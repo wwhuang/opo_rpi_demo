@@ -34,10 +34,9 @@ def teardown_request(exception):
 @app.route('/receive_data', methods=["POST"])
 def receive_data():
     data = request.get_json()
-    g.db.execute('insert into interactions (xr_id, tx_id, range, seq, time,) \
-                 values (?, ?, ?, ?, ?, ?, ?, ?)', \
-                 data['RX_ID'], data['TX_ID'], data['SEQ'],
-                 data['RANGE'], data['SEQ'], data['TIME'])
+    print data
+    g.db.execute('insert into interactions (rx_id, tx_id, range, time) values (?, ?, ?, ?)',
+                 [data['RX_ID'], data['TX_ID'], data['RANGE'], data['TIME']])
     g.db.commit()
     return str(data)
 
@@ -71,19 +70,21 @@ def get_chords():
             interactions[i].append([])
 
     for row in rows:
-        rx_id, tx_id, r, seq, t = row[1], row[2], row[3], row[4], row[5]
+        rx_id, tx_id, r, t = row[1], row[2], row[3], row[4]
         i1, i2 = ids.index(rx_id), ids.index(tx_id)
-        interactions[i1][i2].append((r, seq, t))
+        interactions[i1][i2].append((r, t))
 
     for i in range(len(ids)):
         for j in range(len(ids)):
             if len(interactions[i][j]) > 0:
-                last_time, total_time = interactions[i][j][0], 0
+                last_time, total_time = interactions[i][j][0][0], 0
                 for d in interactions[i][j]:
+                    print d
+                    print last_time
                     if d[0] < 1.1:
-                        if d[2] - last_time <= 10:
-                            total_time += (t - last_time)
-                        last_time = t
+                        if d[1] - last_time <= 12:
+                            total_time += (d[1] - last_time)
+                        last_time = d[1]
                 chords[i][j] = total_time
 
     results['data'] = chords
