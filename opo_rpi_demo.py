@@ -77,7 +77,7 @@ def get_chords():
     for i in range(len(ids)):
         for j in range(len(ids)):
             if len(interactions[i][j]) > 0:
-                last_time, total_time = interactions[i][j][0][0], 0
+                last_time, total_time = interactions[i][j][0][1], 0
                 for d in interactions[i][j]:
                     print d
                     print last_time
