@@ -50,11 +50,10 @@ def index():
 @app.route('/receive_data', methods=["POST"])
 def receive_data():
     data = request.get_json()
-    return data
     g.db.execute('insert into interactions (rx_id, tx_id, range, time, rtc_time) values (?, ?, ?, ?, ?)',
                  [data['rx_id'], data['tx_id'], data['range'], data['time'], data['rtc_time']])
     g.db.commit()
-    return str(data)
+    return 'thanks'
 
 
 @app.route('/chord_graph')
@@ -70,7 +69,7 @@ def get_chords():
     """
     cur = g.db.execute('SELECT * FROM interactions')
     id_cur = g.db.execute('SELECT * FROM id_map')
-    raw_ids, ids, rows = [], []
+    raw_ids, ids, rows = [], [], []
     id_map = {}
 
     for row in cur.fetchall():
@@ -79,10 +78,10 @@ def get_chords():
         rows.append(row)
 
     for row in id_cur.fetchall():
-        id_map[row[0]] = row[1]
+        id_map[row[1]] = row[2]
 
     for i in raw_ids:
-        ids.append(raw_ids[i])
+        ids.append(id_map[i])
 
     ids = sorted(list(set(ids)))
 
@@ -101,7 +100,7 @@ def get_chords():
         rx_id = id_map[rx_id]
         tx_id = id_map[tx_id]
         i1, i2 = ids.index(rx_id), ids.index(tx_id)
-        interactions[i1][i2].append((r, t))
+        interactions[i1][i2].append((m_range, real_time))
 
     for i in range(len(ids)):
         for j in range(len(ids)):
