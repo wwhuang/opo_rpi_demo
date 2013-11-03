@@ -121,7 +121,7 @@ def get_chords():
         raw_ids.append(row[2])
         rows.append(row)
 
-    for row in id_cur.fetchall();
+    for row in id_cur.fetchall():
         id_map[row[0]] = row[1]
 
     for i in raw_ids:
