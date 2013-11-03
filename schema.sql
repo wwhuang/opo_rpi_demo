@@ -11,7 +11,7 @@ create table interactions (
 
 drop table if exists id_map;
 create table id_map (
-	pid integer primary key autoincrement;
+	pid integer primary key autoincrement,
 	ds2411_id integer not null,
 	node_id integer not null
 );
