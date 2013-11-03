@@ -36,7 +36,7 @@
 }
 </style>
 
-<div id="cse-leaderboard"></div>
+<div id="stacked_names"></div>
 
 <script>
 
@@ -45,20 +45,12 @@ var width = document.documentElement.clientWidth - margin.left - margin.right - 
 var height = document.documentElement.clientHeight - margin.top - margin.bottom - 90
 
 // Set up d3 SVG
-var svg = d3.select("#cse-leaderboard").append("svg")
-  .attr("class", "leaderboard-svg")
+var svg = d3.select("#stacked_names").append("svg")
+  .attr("class", "stacked-svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
 .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-svg.append("text")
-   .attr("class", "fitbit-leaderboard-title")
-   .attr("x", width/2)
-   .attr("y", 10)
-   .attr("text-anchor", "middle")
-   .style("font-size", "36px")
-   .text("Weekly Steps Taken");
 
 var xScale = d3.scale.ordinal()
   .rangeRoundBands([3, width], .1);
@@ -75,14 +67,7 @@ var yAxis = d3.svg.axis()
   .orient("left")
   .tickFormat(d3.format(".2s"));
 
-var step_labels;
-var user_steps;
-var current_date;
-var current_day;
-var current_week;
-var legend_rects;
-var legend_text;
-var step_array;
+var data;
 
 // Set up x axis positioning in svg
 svg.append("g")
@@ -104,38 +89,6 @@ svg.append("g")
 
 // Set up our days to color mapping
 var cScale = d3.scale.ordinal()
-  .domain(["m", "t", "w", "th", "f", "s", "su"])
-  .range(["#212A55", "#3A5E8C", "#699CC6", "#679146",
-          "#B7BF10", "#FFC72C", "#F6D565"]);
-
-var weekday_mapper = [];
-weekday_mapper[0] = 'su';
-weekday_mapper[1] = 'm';
-weekday_mapper[2] = 't';
-weekday_mapper[3] = 'w';
-weekday_mapper[4] = 'th';
-weekday_mapper[5] = 'f';
-weekday_mapper[6] = 's';
-
-var legend = svg.selectAll(".legend")
-  .data(cScale.domain())
-  .enter()
-
-legend.append("rect")
-  .attr("class", "legend-rect")
-  .attr("x", width - 18)
-  .attr("y", function(d,i){return ((i * 20) + 24)})
-  .attr("width", 18)
-  .attr("height", 18)
-  .attr("vertical-align", "top");
-
-legend.append("text")
-  .attr("class", "legend-text")
-  .attr("x", width - 24)
-  .attr("y", function(d,i){return ( (i * 20) + 39 )  } )
-  .style("text-anchor", "end")
-  .style("vertical-align", "middle")
-  .style("font-size", 12);
 
 getInfoAndRender();
 
@@ -150,48 +103,12 @@ function getInfoAndRender() {
 }
 
 function updateLeaderBoard(data) {
-  current_date = new Date();
-  current_day = current_date.getDay();
-  current_week = [];
-
-  for(var i = current_day; i >= 0; i--) {
-    current_week.push(i);
-  }
-
-  for(var n = 6; n > current_day; n--) {
-    current_week.push(n);
-  }
-
-  legend_rects = svg.selectAll(".legend-rect")
-                        .data(current_week);
-
-  legend_rects.transition()
-    .duration(750)
-    .style("fill", function(d){ return cScale(weekday_mapper[d]) });
-
-  legend_text = svg.selectAll(".legend-text")
-                       .data(current_week);
-
-  legend_text.transition()
-    .duration(750)
-    .text(function(d){ return weekday_mapper[d] });
 
   xScale.domain(data.map(function(d){return d.username}))
         .rangeRoundBands([3, width], .1);
   yScale.domain([0, d3.max(data, function(d){ return d.total_steps; } )]);
 
   step_array = []
-
-  data.forEach(function(d) {
-    var y0 = 0;
-    d.step_counts.forEach(function(daystep){
-      daystep.y0 = y0;
-      daystep.y1 = y0 + daystep.steps;
-      daystep.x = xScale(d.username)
-      y0 = daystep.y1;
-      step_array.push(daystep)
-    });
-  });
 
   user_steps = svg.selectAll(".step-bars")
   	.data( step_array )
