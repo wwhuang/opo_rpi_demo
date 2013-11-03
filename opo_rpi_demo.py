@@ -35,8 +35,8 @@ def teardown_request(exception):
 def receive_data():
     data = request.get_json()
     print data
-    g.db.execute('insert into interactions (rx_id, tx_id, range, time) values (?, ?, ?, ?)',
-                 [data['RX_ID'], data['TX_ID'], data['RANGE'], data['TIME']])
+    g.db.execute('insert into interactions (rx_id, tx_id, b_num, range, time) values (?, ?, ?, ?, ?)',
+                 [data['RX_ID'], data['TX_ID'], data['B_NUM'] data['RANGE'], data['TIME']])
     g.db.commit()
     return str(data)
 
@@ -70,7 +70,7 @@ def get_chords():
             interactions[i].append([])
 
     for row in rows:
-        rx_id, tx_id, r, t = row[1], row[2], row[3], row[4]
+        rx_id, tx_id, b_num, r, t = row[1], row[2], row[3], row[4], row[5]
         i1, i2 = ids.index(rx_id), ids.index(tx_id)
         interactions[i1][i2].append((r, t))
 

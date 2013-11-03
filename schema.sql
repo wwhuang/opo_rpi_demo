@@ -3,6 +3,7 @@ create table interactions (
   pid integer primary key autoincrement,
   rx_id integer not null,
   tx_id integer not null,
+  b_num integer not null,
   range real not null,
   time integer not null
 );
