@@ -113,66 +113,6 @@ def get_chords():
 
     return json.dumps(results)
 
-@app.route('/get_stacks')
-def get_stacks():
-    """
-    Grab all interactions from the database, then create interactions
-    based on both time and range. Sequence unused for now.
-    """
-    cur = g.db.execute('SELECT * FROM interactions')
-    id_cur = g.db.execute('SELECT * FROM id_map')
-    raw_ids, ids, rows = [], []
-    id_map = {}
-
-    for row in cur.fetchall():
-        raw_ids.append(row[1])
-        raw_ids.append(row[2])
-        rows.append(row)
-
-    for row in id_cur.fetchall():
-        id_map[row[0]] = row[1]
-
-    for i in raw_ids:
-        ids.append(raw_ids[i])
-
-    ids = sorted(list(set(ids)))
-
-    data =
-    results = {}
-
-    for i in range(len(ids)):
-        chords.append([])
-        interactions.append([])
-        for j in range(len(ids)):
-            chords[i].append(0)
-            interactions[i].append([])
-
-    for row in rows:
-        rx_id, tx_id, b_num, r, t = row[1], row[2], row[3], row[4], row[5]
-        rx_id = id_map[rx_id]
-        tx_id = id_map[tx_id]
-        i1, i2 = ids.index(rx_id), ids.index(tx_id)
-        interactions[i1][i2].append((r, t))
-
-    for i in range(len(ids)):
-        for j in range(len(ids)):
-            if len(interactions[i][j]) > 0:
-                last_time, total_time = interactions[i][j][0][1], 0
-                for d in interactions[i][j]:
-                    print d
-                    print last_time
-                    if d[0] < 1.1:
-                        if d[1] - last_time <= 12:
-                            total_time += (d[1] - last_time)
-                        last_time = d[1]
-                chords[i][j] = total_time
-
-    results['data'] = chords
-    results['ids'] = ids
-    results['title'] = "Social Interactions"
-
-    return json.dumps(results)
-
 if __name__ == '__main__':
     app.config['DEBUG'] = True
     if not os.path.isfile(app.config['DATABASE']):
