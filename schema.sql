@@ -5,7 +5,7 @@ create table interactions (
   tx_id integer not null,
   range real not null,
   time integer not null,
-  rtc_time integer not null,
+  rtc_time real not null,
   UNIQUE(rx_id, tx_id, rtc_time) ON CONFLICT REPLACE
 );
 
