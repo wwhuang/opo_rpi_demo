@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
-{% block content %}
+
+{% block title %}
+<title> Stacked Name Visualization </title>
+{% endblock %}
+
+{% block body %}
 <style type="text/css">
 .axis path,
 .axis line {
@@ -16,24 +21,6 @@
   display: none;
 }
 
-#leaderboard_title {
-  position: absolute;
-  top:5px;
-  left:50%;
-  min-width: 100px;
-  width: 30%;
-  border: 3px solid #699CC6;
-  background-color: #fff;
-  margin-left: -15%;
-  text-align: center;
-  color: #111;
-  height: 75px;
-  z-index: 1500;
-  font-size: 200%;
-  vertical-align: center;
-  padding-top: 25px;
-  /*border-radius: 15px;*/
-}
 </style>
 
 <div id="stacked_names"></div>
@@ -67,8 +54,6 @@ var yAxis = d3.svg.axis()
   .orient("left")
   .tickFormat(d3.format(".2s"));
 
-var data;
-
 // Set up x axis positioning in svg
 svg.append("g")
 .attr("class", "x-axis")
@@ -97,44 +82,40 @@ var looper = setInterval(function(){getInfoAndRender()}, 10000)
 
 // Gets the data from the server, passes it to our D3 js
 function getInfoAndRender() {
-  $.getJSON("{{ meta.root }}/group_info", function(data) {
-    updateLeaderBoard(data);
+  $.getJSON("/get_stacks", function(data) {
+    updateStackedGraph(data);
   });
 }
 
-function updateLeaderBoard(data) {
+function updateStackedGraph(data) {
 
   xScale.domain(data.map(function(d){return d.username}))
         .rangeRoundBands([3, width], .1);
-  yScale.domain([0, d3.max(data, function(d){ return d.total_steps; } )]);
+  yScale.domain([0, d3.max(data, function(d){ return d.interaction_time; } )]);
 
-  step_array = []
+  var interactions = svg.selectAll(".interactions")
+  	.data( data )
 
-  user_steps = svg.selectAll(".step-bars")
-  	.data( step_array )
-
-  user_steps.transition()
+  interactions.transition()
       .duration(750)
-      .attr("x", function(d){ return d.x })
-      .attr("y", function(d){ return yScale(d.y1) })
-      .attr("height", function(d){ return yScale(d.y0) - yScale(d.y1) })
-      .attr("width", xScale.rangeBand())
-      .style("fill", function(d){ return cScale(d.day) });
+      .attr("x", function(d){ return xScale(d.id1) })
+      .attr("y", function(d){ return yScale(d.interaction_time) })
+      .text(function(d){return d.id2})
 
-  user_steps.enter()
-      .append("rect")
-      .attr("class", "step-bars")
-      .attr("width", xScale.rangeBand())
-      .attr("x", function(d){ return d.x })
-      .attr("y", function(d){ return yScale(d.y1); })
-      .attr("height", function(d){ return yScale(d.y0) - yScale(d.y1); })
-      .style("fill", function(d){ return cScale(d.day) })
+  interactions.enter()
+      .append("text")
+      .attr("class", "interactions")
+      .attr("x", function(d){ return xScale(d.id1) })
+      .attr("y", function(d){ return yScale(d.interaction_time); })
+      .attr("text-anchor", "middle")
+      .style("fill", "#000000")
       .style("fill-opacity", 0)
+      .text(function(d){return d.id2})
     .transition()
       .duration(750)
       .style("fill-opacity", 1);
 
-  user_steps.exit()
+  interactions.exit()
     .transition()
       .duration(750)
       .style("fill-opacity", 0)
@@ -150,30 +131,6 @@ function updateLeaderBoard(data) {
     .duration(500)
     .call(yAxis);
 
-  step_labels = svg.selectAll(".step-labels")
-                      .data(data)
-
-  step_labels.transition()
-    .duration(750)
-    .text(function(d){ return d.total_steps })
-    .attr("x", function(d){ return xScale(d.username) + xScale.rangeBand()/2 })
-    .attr("y", function(d){ return yScale(d.total_steps) - 4 });
-
-  step_labels.enter()
-    .append("text")
-    .attr("class", "step-labels")
-    .attr("text-anchor", "middle")
-    .text(function(d){ return d.total_steps })
-    .transition()
-    .duration(750)
-    .attr("x", function(d){ return xScale(d.username) + xScale.rangeBand()/2  })
-    .attr("y", function(d){ return yScale(d.total_steps) - 4});
-
-  step_labels.exit()
-    .transition()
-    .duration(750)
-    .style("opacity", 0)
-    .remove();
 }
 </script>
 
