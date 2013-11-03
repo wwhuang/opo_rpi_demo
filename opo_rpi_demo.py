@@ -25,7 +25,7 @@ def init_db():
             ds2411_id = int(raw[0], 16)
             node_id = int(raw[1])
             db.execute('insert into id_map (ds2411_id, node_id) values (?, ?)',
-                        ds2411_id, node_id)
+                        [ds2411_id, node_id])
         db.commit()
 
 @app.before_request
