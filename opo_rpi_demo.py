@@ -27,6 +27,7 @@ def init_db():
             db.execute('insert into id_map (ds2411_id, node_id) values (?, ?)',
                         [ds2411_id, node_id])
         db.commit()
+        db.close()
 
 @app.before_request
 def before_request():
@@ -39,8 +40,10 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+
 @app.route('/')
-def home():
+@app.route('/index')
+def index():
     return "Hello"
 
 
