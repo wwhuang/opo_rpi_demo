@@ -39,6 +39,10 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+@app.route('/')
+def home():
+    return "Hello"
+
 
 @app.route('/receive_data', methods=["POST"])
 def receive_data():
