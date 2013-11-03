@@ -114,8 +114,8 @@ def get_chords():
     return json.dumps(results)
 
 @app.route('/get_stacks')
-def get_chords():
- """
+def get_stacks():
+    """
     Grab all interactions from the database, then create interactions
     based on both time and range. Sequence unused for now.
     """
