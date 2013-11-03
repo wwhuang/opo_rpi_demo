@@ -14,5 +14,4 @@ create table id_map (
 	pid integer primary key autoincrement;
 	ds2411_id integer not null,
 	node_id integer not null,
-	initials text
 );
