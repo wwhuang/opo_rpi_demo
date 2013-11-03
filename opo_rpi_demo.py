@@ -17,7 +17,15 @@ def init_db():
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
-
+        reader = open('Node_Ids.csv', 'rb')
+        reader.readline()
+        for line in reader:
+            raw = line.strip().split()
+            ds2411_id = int(raw[0], 16)
+            node_id = int(raw[1])
+            db.execute('insert into id_map (ds2411_id, node_id) values (?, ?)',
+                        ds2411_id, node_id)
+        db.commit()
 
 @app.before_request
 def before_request():
