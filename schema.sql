@@ -6,7 +6,7 @@ create table interactions (
   range real not null,
   time integer not null,
   rtc_time integer not null,
-  UNIQUE(rx_id, tx_id, rtc_time) ON CONFLICT REPLACE)
+  UNIQUE(rx_id, tx_id, rtc_time) ON CONFLICT REPLACE
 );
 
 drop table if exists id_map;
