@@ -85,7 +85,7 @@ svg.append("text") // Give the graph a title
   .style("text-decoration", "underline")
   .text(title);
 
-var looper = setInterval(function(){getInfoAndRender()}, 2000)
+var looper = setInterval(function(){getInfoAndRender()}, 10000)
 
 function getInfoAndRender() {
   $.getJSON( "/get_chords", function(data) {
