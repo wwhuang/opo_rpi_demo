@@ -50,6 +50,7 @@ def index():
 @app.route('/receive_data', methods=["POST"])
 def receive_data():
     data = request.get_json()
+    return data
     g.db.execute('insert into interactions (rx_id, tx_id, range, time, rtc_time) values (?, ?, ?, ?, ?)',
                  [data['rx_id'], data['tx_id'], data['range'], data['time'], data['rtc_time']])
     g.db.commit()
